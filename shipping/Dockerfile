@@ -4,7 +4,7 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package
 
-FROM openjdk:17
+FROM openjdk:17-jdk
 WORKDIR /app
 COPY --from=build /app/target/shipping-1.0.jar shipping.jar
 CMD ["java", "-jar", "shipping.jar"]
