@@ -1,18 +1,21 @@
 services:
-  mongodb:
-    image: mongodb:v1
-    container_name: mongodb
-  catalogue:
-    image: catalogue:v1
-    container_name: catalogue
-    depends_on:
-    - mongodb
-  mongodb:
-    image: mongodb :v1
-    container_name: mongodb
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: RoboShop@123
+      MYSQL_DATABASE: shipping
+    ports:
+      - "3306:3306"
 
-networks:
-  default:
-    driver: bridge
-    name: roboshop
-    external: false
+  mongodb:
+    image: mongo:6
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
