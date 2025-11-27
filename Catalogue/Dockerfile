@@ -32,12 +32,36 @@
 # CMD ["node", "server.js"]
 
 ### ---- BUILD STAGE ----
-FROM node:20.19.5-alpine3.22 AS build
-RUN addgroup -S roboshop && adduser -S roboshop -G appgroup
+# -------------------------
+# Stage 1: Build
+# -------------------------
+FROM node:20.19.5-alpine3.22 AS builder
 WORKDIR /opt/server
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build || echo "Build script skipped"
+
+
+# -------------------------
+# Stage 2: Runtime
+# -------------------------
+FROM node:20.19.5-alpine3.22
+WORKDIR /opt/server
+
+# Create user
+RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
 USER roboshop
-COPY --from=build /opt/server /opt/server
+
+# Copy built code
+COPY --from=builder /opt/server /opt/server
+
+# Environment variables
 ENV MONGO="true" \
     MONGO_URL="mongodb://mongodb:27017/catalogue"
+
+EXPOSE 8080
 
 CMD ["node", "server.js"]
